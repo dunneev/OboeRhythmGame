@@ -73,3 +73,20 @@ TapResult Game::getTapResult(int64_t tapTimeInMillis, int64_t tapWindowInMillis)
         return TapResult::Late;
     }
 }
+
+/*
+ * Decode CLAP.mp3 into PCM data and store it in the Player object
+ */
+bool Game::setupAudioSources() {
+
+    // Create a data source and player for the clap sound
+    std::shared_ptr<AAssetDataSource> mClapSource {
+            AAssetDataSource::newFromCompressedAsset(mAssetManager, "CLAP.mp3")
+    };
+    if (mClapSource == nullptr){
+        LOGE("Could not load source data for clap sound");
+        return false;
+    }
+    mClap = std::make_unique<Player>(mClapSource);
+    return true;
+}

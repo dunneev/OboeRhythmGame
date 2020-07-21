@@ -58,6 +58,9 @@ private:
 
     void load();
     TapResult getTapResult(int64_t tapTimeInMillis, int64_t tapWindowInMillis);
+
+    std::unique_ptr<Player> mClap;
+    bool setupAudioSources();
 };
 
 
