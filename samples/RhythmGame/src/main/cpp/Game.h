@@ -40,7 +40,7 @@ enum class GameState {
     FailedToLoad
 };
 
-class Game {
+class Game : public AudioStreamCallback {
 public:
     explicit Game(AAssetManager&);
     void start();
@@ -50,6 +50,7 @@ public:
     void onSurfaceChanged(int widthInPixels, int heightInPixels);
     void tick();
     void tap(int64_t eventTimeAsUptime);
+    DataCallbackResult onAudioReady(AudioStream *oboeStream, void *audioData, int32_t numFrames) override;
 
 private:
     AAssetManager& mAssetManager;

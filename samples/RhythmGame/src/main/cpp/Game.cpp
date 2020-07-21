@@ -106,10 +106,29 @@ bool Game::openStream() {
 
     builder.setChannelCount(2);
 
+    // Tell the builder where to find the callback object before the stream is opened.
+    builder.setCallback(this);
+
     Result result = builder.openManagedStream(mAudioStream);
     if (result != Result::OK){
         LOGE("Failed to open stream. Error: %s", convertToText(result));
         return false;
     }
     return true;
+}
+
+/*
+ * Callback method to get audio data from memory into audio stream.
+ *
+ * Note: Whenever we receive a container array of type void * we must remember
+ * to cast it to the current stream data format (in our case float) and supply
+ * data only in that format. Failure to do so will result in some awful noise!
+ */
+DataCallbackResult Game::onAudioReady(AudioStream *oboeStream, void *audioData, int32_t numFrames) {
+
+    // Render the mClap audio data into the audioData array
+    mClap->renderAudio(static_cast<float *>(audioData), numFrames);
+
+    // Tell the stream we intend to keep sending audio data. Callbacks should continue.
+    return DataCallbackResult::Continue;
 }
