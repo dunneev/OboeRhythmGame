@@ -90,3 +90,19 @@ bool Game::setupAudioSources() {
     mClap = std::make_unique<Player>(mClapSource);
     return true;
 }
+
+/*
+ * Setup an AudioStream to communicate with an audio device.
+ */
+bool Game::openStream() {
+    AudioStreamBuilder builder;
+    builder.setFormat(AudioFormat::Float);
+    builder.setPerformanceMode(PerformanceMode::LowLatency);
+    builder.setSharingMode(SharingMode::Exclusive);
+    builder.setSampleRate(48000);
+
+    // Fallback to med. quality resampling algorithm if the device does not support the sample rate specified above.
+    builder.setSampleRateConversionQuality(SampleRateConversionQuality::Medium);
+
+    builder.setChannelCount(2);
+}

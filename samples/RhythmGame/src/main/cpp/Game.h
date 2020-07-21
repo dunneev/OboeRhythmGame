@@ -61,6 +61,8 @@ private:
 
     std::unique_ptr<Player> mClap;
     bool setupAudioSources();
+
+    bool openStream();
 };
 
 
