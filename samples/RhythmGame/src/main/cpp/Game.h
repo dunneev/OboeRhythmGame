@@ -63,6 +63,7 @@ private:
     bool setupAudioSources();
 
     bool openStream();
+    ManagedStream mAudioStream { nullptr };
 };
 
 

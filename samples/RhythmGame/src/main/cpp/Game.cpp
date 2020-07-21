@@ -105,4 +105,11 @@ bool Game::openStream() {
     builder.setSampleRateConversionQuality(SampleRateConversionQuality::Medium);
 
     builder.setChannelCount(2);
+
+    Result result = builder.openManagedStream(mAudioStream);
+    if (result != Result::OK){
+        LOGE("Failed to open stream. Error: %s", convertToText(result));
+        return false;
+    }
+    return true;
 }
