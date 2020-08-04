@@ -79,6 +79,8 @@ private:
     LockFreeQueue<int64_t, kMaxQueueItems> mClapWindows;
     int64_t mLastUpdateTime { 0 };
 
+    LockFreeQueue<TapResult, kMaxQueueItems> mUiEvents;
+
 };
 
 

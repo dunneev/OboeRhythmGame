@@ -94,7 +94,12 @@ void Game::tap(int64_t eventTimeAsUptime) {
 void Game::tick(){
     switch (mGameState){
         case GameState::Playing:
-            SetGLScreenColor(kPlayingColor);
+            TapResult r;
+            if (mUiEvents.pop(r)) {
+                renderEvent(r);
+            } else {
+                SetGLScreenColor(kPlayingColor);
+            }
             break;
         case GameState::Loading:
             SetGLScreenColor(kLoadingColor);
