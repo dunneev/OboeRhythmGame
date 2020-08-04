@@ -25,8 +25,41 @@ Game::Game(AAssetManager &assetManager): mAssetManager(assetManager) {
 
 }
 
+/*
+ * Before the game can be played there's a couple of things that must happen:
+ *
+ * The audio stream must be opened using openStream.
+ * Any MP3 files used by the game need to be decoded and loaded into memory using setupAudioSources.
+ *
+ * These operations are blocking, and depending on the size of the MP3 files and the speed of the
+ * decoder they might take several seconds to complete. We should avoid performing these operations
+ * on the main thread otherwise we might get a dreaded ANR(Application Not Responding).
+ *
+ * Another thing which must happen before the game can be played is starting the audio stream.
+ * It makes sense to do this after the other loading operations have completed.
+ *
+ * load() will be called on a separate thread.
+ */
 void Game::load() {
-    // Add your code here
+
+    if (!openStream()) {
+        mGameState = GameState::FailedToLoad;
+        return;
+    }
+
+    if (!setupAudioSources()) {
+        mGameState = GameState::FailedToLoad;
+        return;
+    }
+
+    Result result = mAudioStream->requestStart();
+    if (result != Result::OK){
+        LOGE("Failed to start stream. Error: %s", convertToText(result));
+        mGameState = GameState::FailedToLoad;
+        return;
+    }
+
+    mGameState = GameState::Playing;
 }
 
 void Game::start() {
