@@ -133,6 +133,23 @@ bool Game::setupAudioSources() {
         return false;
     }
     mClap = std::make_unique<Player>(mClapSource);
+
+    // Create a data source and player for our backing track
+    std::shared_ptr<AAssetDataSource> backingTrackSource {
+            AAssetDataSource::newFromCompressedAsset(mAssetManager, "FUNKY_HOUSE.mp3")
+    };
+    if (backingTrackSource == nullptr){
+        LOGE("Could not load source data for backing track");
+        return false;
+    }
+    mBackingTrack = std::make_unique<Player>(backingTrackSource);
+    mBackingTrack->setPlaying(true);
+    mBackingTrack->setLooping(true);
+
+    // Add both players to a mixer
+    mMixer.addTrack(mClap.get());
+    mMixer.addTrack(mBackingTrack.get());
+    mMixer.setChannelCount(mAudioStream->getChannelCount());
     return true;
 }
 

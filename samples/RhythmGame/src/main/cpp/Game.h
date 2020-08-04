@@ -65,6 +65,9 @@ private:
 
     bool openStream();
     ManagedStream mAudioStream { nullptr };
+
+    std::unique_ptr<Player> mBackingTrack;
+    Mixer mMixer;
 };
 
 
