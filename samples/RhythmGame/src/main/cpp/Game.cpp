@@ -52,6 +52,9 @@ void Game::load() {
         return;
     }
 
+    // We need to call scheduleSongEvents before the stream is started so
+    // that all events are enqueued before the backing track starts playing.
+    scheduleSongEvents();
     Result result = mAudioStream->requestStart();
     if (result != Result::OK){
         LOGE("Failed to start stream. Error: %s", convertToText(result));
@@ -188,9 +191,35 @@ bool Game::openStream() {
  */
 DataCallbackResult Game::onAudioReady(AudioStream *oboeStream, void *audioData, int32_t numFrames) {
 
-    // Render the mixer audio data into the audioData array
-    mMixer.renderAudio(static_cast<float*>(audioData), numFrames);
+    float *outputBuffer = static_cast<float *>(audioData);
+    int64_t nextClapEventMs;
+
+    for (int i = 0; i < numFrames; ++i) {
+
+        mSongPositionMs = convertFramesToMillis(
+                mCurrentFrame,
+                mAudioStream->getSampleRate());
+
+        if (mClapEvents.peek(nextClapEventMs) && mSongPositionMs >= nextClapEventMs){
+            mClap->setPlaying(true);
+            mClapEvents.pop(nextClapEventMs);
+        }
+
+        // Render the mixer audio data into the audioData array
+        mMixer.renderAudio(outputBuffer+(oboeStream->getChannelCount()*i), 1);
+        mCurrentFrame++;
+    }
 
     // Tell the stream we intend to keep sending audio data. Callbacks should continue.
     return DataCallbackResult::Continue;
+
+
+}
+
+void Game::scheduleSongEvents() {
+
+    // schedule the claps
+    mClapEvents.push(0);
+    mClapEvents.push(500);
+    mClapEvents.push(1000);
 }

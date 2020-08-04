@@ -63,11 +63,18 @@ private:
     std::unique_ptr<Player> mClap;
     bool setupAudioSources();
 
+    void scheduleSongEvents();
+
     bool openStream();
     ManagedStream mAudioStream { nullptr };
 
     std::unique_ptr<Player> mBackingTrack;
     Mixer mMixer;
+
+    // Thread-safe class template for enqueuing claps
+    LockFreeQueue<int64_t, 4> mClapEvents;
+    std::atomic<int64_t> mCurrentFrame { 0 };
+    std::atomic<int64_t> mSongPositionMs { 0 };
 };
 
 
