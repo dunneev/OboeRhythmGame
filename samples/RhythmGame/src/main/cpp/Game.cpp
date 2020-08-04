@@ -63,7 +63,9 @@ void Game::load() {
 }
 
 void Game::start() {
-    // Add your code here
+
+    // Call load() asynchronously.
+    mLoadingResult = std::async(&Game::load, this);
 }
 
 void Game::stop(){
