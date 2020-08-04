@@ -73,7 +73,7 @@ void Game::stop(){
 }
 
 void Game::tap(int64_t eventTimeAsUptime) {
-    // Add your code here
+    mClap->setPlaying(true);
 }
 
 void Game::tick(){
