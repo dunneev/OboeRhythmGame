@@ -76,8 +76,20 @@ void Game::stop(){
 }
 
 void Game::tap(int64_t eventTimeAsUptime) {
-    mClap->setPlaying(true);
-}
+    if (mGameState != GameState::Playing){
+        LOGW("Game not in playing state, ignoring tap event");
+    } else {
+        mClap->setPlaying(true);
+
+        int64_t nextClapWindowTimeMs;
+        if (mClapWindows.pop(nextClapWindowTimeMs)){
+
+            // Convert the tap time to a song position
+            int64_t tapTimeInSongMs = mSongPositionMs + (eventTimeAsUptime - mLastUpdateTime);
+            TapResult result = getTapResult(tapTimeInSongMs, nextClapWindowTimeMs);
+            mUiEvents.push(result);
+        }
+    }}
 
 void Game::tick(){
     switch (mGameState){
@@ -210,6 +222,8 @@ DataCallbackResult Game::onAudioReady(AudioStream *oboeStream, void *audioData, 
         mCurrentFrame++;
     }
 
+    mLastUpdateTime = nowUptimeMillis();
+
     // Tell the stream we intend to keep sending audio data. Callbacks should continue.
     return DataCallbackResult::Continue;
 
@@ -222,4 +236,9 @@ void Game::scheduleSongEvents() {
     mClapEvents.push(0);
     mClapEvents.push(500);
     mClapEvents.push(1000);
+
+    // schedule the clap windows
+    mClapWindows.push(2000);
+    mClapWindows.push(2500);
+    mClapWindows.push(3000);
 }

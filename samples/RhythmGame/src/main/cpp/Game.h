@@ -75,6 +75,10 @@ private:
     LockFreeQueue<int64_t, 4> mClapEvents;
     std::atomic<int64_t> mCurrentFrame { 0 };
     std::atomic<int64_t> mSongPositionMs { 0 };
+
+    LockFreeQueue<int64_t, kMaxQueueItems> mClapWindows;
+    int64_t mLastUpdateTime { 0 };
+
 };
 
 
