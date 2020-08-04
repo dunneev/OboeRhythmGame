@@ -188,8 +188,8 @@ bool Game::openStream() {
  */
 DataCallbackResult Game::onAudioReady(AudioStream *oboeStream, void *audioData, int32_t numFrames) {
 
-    // Render the mClap audio data into the audioData array
-    mClap->renderAudio(static_cast<float *>(audioData), numFrames);
+    // Render the mixer audio data into the audioData array
+    mMixer.renderAudio(static_cast<float*>(audioData), numFrames);
 
     // Tell the stream we intend to keep sending audio data. Callbacks should continue.
     return DataCallbackResult::Continue;
