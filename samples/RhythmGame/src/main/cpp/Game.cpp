@@ -77,7 +77,17 @@ void Game::tap(int64_t eventTimeAsUptime) {
 }
 
 void Game::tick(){
-    SetGLScreenColor(kLoadingColor);
+    switch (mGameState){
+        case GameState::Playing:
+            SetGLScreenColor(kPlayingColor);
+            break;
+        case GameState::Loading:
+            SetGLScreenColor(kLoadingColor);
+            break;
+        case GameState::FailedToLoad:
+            SetGLScreenColor(kLoadingFailedColor);
+            break;
+    }
 }
 
 void Game::onSurfaceCreated() {
